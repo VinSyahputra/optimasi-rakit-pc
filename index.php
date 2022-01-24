@@ -18,21 +18,14 @@ class Individu
         $products = ['processor', 'mainboard', 'memory', 'vga', 'harddisk'];
         for ($i = 0; $i < count($product); $i++) {
             $ret[] = [$products[$i], rand(0, 4)];
-            // echo '<pre>';
-            // print_r($ret[$i][0]);
-            // echo '<br>';
-            // print_r($product[$ret[$i][0]][$ret[$i][1]]);
+
             $temp = $product[$ret[$i][0]][$ret[$i][1]];
 
             $harga[] = $temp['harga'];
             $tier[] = $temp['value'];
             $total += $harga[$i];
         }
-        // print_r($ret[2][1]);
-        //$product[namaAssosiatif][productTerpilih]
-        // print_r($product[$ret[2][0]][$ret[0][1]]);
-        // print_r($ret);
-        // echo 'harga :' . $total;
+
         return [$ret, $total, $tier];
     }
 }
@@ -45,10 +38,8 @@ class Population
         for ($i = 0; $i < Params::POPULATION_SIZE; $i++) {
             $ret[] = $individu->createIndividu($product);
         }
-        //[individu][product]
-        // print_r($ret[1][2]);
+
         return $ret;
-        // print_r($ret);
     }
 }
 
@@ -57,26 +48,38 @@ class Fitness
     function countPrice($population)
     {
         echo '<pre>';
-        // print_r($population[1][2]);
 
+        $ret = [];
+        $items = [];
+        $prices = [];
+        $stars = [];
         for ($i = 0; $i < Params::POPULATION_SIZE; $i++) {
             if ($population[$i][1] < Params::BUDGET) {
 
-                print_r($population[$i][0]);
-                echo 'Total Harga Rakit PC : Rp. ';
-                print_r(number_format($population[$i][1]));
-                echo '<br>';
-                echo 'Star : ' . round(array_sum($population[$i][2]) / 5, 1);
-                echo '<br>';
-                echo '<br>';
-                echo '<br>';
+                array_push($items, $population[$i][0]);
+                array_push($prices, $population[$i][1]);
+                array_push($stars, round(array_sum($population[$i][2]) / 5, 1));
             }
+            $ret = [
+                'items' => $items,
+                'prices' => $prices,
+                'stars' => $stars,
+            ];
         }
+        var_dump($ret['prices']);
+        $price =  number_format($this->searchBestIndividu($ret['prices']));
+        echo $price;
+        $key =  array_search($this->searchBestIndividu($ret['prices']), $ret['prices']);
+        echo '<br>';
+        print_r($ret['items'][$key]);
+    }
+    function searchBestIndividu($data)
+    {
+        return max($data);
     }
 }
 
-// $individu = new Individu;
-// $individu->createIndividu($product);
+
 
 $initialPopulation = new Population;
 $population = $initialPopulation->createPopulation($product);
